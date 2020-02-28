@@ -1,17 +1,28 @@
-import discord
+import os
+import aiohttp
 
-client = discord.Client()
+from discord.ext import commands
 
-@client.event
+from dotenv import load_dotenv
+
+load_dotenv()
+token = os.getenv("DISCORD_TOKEN")
+
+
+bot = commands.Bot(command_prefix='!')
+
+@bot.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
+    print(f'{bot.user.name} has connected to Discord!')
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
+@bot.command(name= 'fib')
+async def fibonacci(ctx, x: int):
+    sign = -1 if x < 0 else 1
+    a, b = 0, sign*1
+    fib = []
+    for _ in range(abs(x)):
+        fib.append(a)
+        a, b = b, b + a
+    await ctx.send(str(fib)[1:-1])
 
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
-
-client.run('your token here')
+bot.run(token) 
